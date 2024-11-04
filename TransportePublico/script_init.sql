@@ -43,7 +43,7 @@ CREATE TYPE tipo_pagamento AS ENUM ('dinheiro', 'vale_transporte', 'estudante', 
 
 CREATE TABLE pagamento (pagamento_id SERIAL NOT NULL,
 						tipo tipo_pagamento NOT NULL,
-						preco float,
+						preco numeric(10, 2),
 						CONSTRAINT pk_pagamento PRIMARY KEY (pagamento_id));
 
 
