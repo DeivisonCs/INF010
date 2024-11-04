@@ -16,7 +16,7 @@ CREATE MATERIALIZED VIEW view_passagens_resumo AS
 REFRESH MATERIALIZED VIEW view_passagens_resumo;
 
 
-// ----------------- Exemplos de consultas ----------------- 
+----------------- Exemplos de consultas ----------------- 
 
 SELECT * FROM view_passagens_resumo
 	WHERE data = '2024-11-01';
