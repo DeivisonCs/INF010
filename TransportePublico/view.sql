@@ -1,5 +1,3 @@
-DROP MATERIALIZED VIEW IF EXISTS view_passagens_resumo;
-
 CREATE MATERIALIZED VIEW view_passagens_resumo AS
     SELECT
         p.linha_id,
