@@ -1,8 +1,3 @@
-SELECT * FROM indice;
-SELECT * FROM indice WHERE codmunicipio = 354880;
-	
-UPDATE indice SET idh_geral = 0.880 WHERE codmunicipio = 354880;
-
 ---------------------- TRIGGERS ------------------------------
 
 DROP FUNCTION IF EXISTS RecalculateIDX CASCADE;
@@ -13,7 +8,7 @@ RETURNS TRIGGER AS $RecalculateIDX$
 BEGIN
 	UPDATE indice
 	SET idx = (NEW.idh_educacao^2 * NEW.idh_longevidade) / NEW.idh_geral
-	WHERE codmunicipio = NEW.codmunicipio;
+	WHERE codmunicipio = NEW.codmunicipio AND ano = NEW.ano;
 
     RETURN NEW;
 END;
@@ -25,3 +20,10 @@ ON indice
 FOR EACH ROW
 WHEN (OLD.idx = NEW.idx)
 EXECUTE PROCEDURE RecalculateIDX();
+
+
+---------------------- TESTES ------------------------------
+
+SELECT * FROM indice WHERE codmunicipio = 350060;
+
+UPDATE indice SET idh_geral = 0.880 WHERE codmunicipio = 350060;
