@@ -1,9 +1,8 @@
 -- Inserção de empresas
 INSERT INTO empresa (nome) VALUES 
-('Empresa A'),
-('Empresa B'),
-('Empresa C');
-
+('Empresa A', 'Avenida Central, 456, Bairro XYZ, Cidade ABC', '(21) 99876-5432', 'contato@empresaA.com', '98765432000123'),
+('Empresa B', 'Rua das Flores, 789, Bairro QWE, Cidade PQR', '(31) 91234-5678', 'contato@empresaB.com', '11223344000176'),
+('Empresa C', 'Avenida Brasil, 1011, Bairro ZXC, Cidade LMN', '(41) 92345-6789', 'contato@empresaC.com', '22334455000188');
 -- Inserção de situação do motorista
 INSERT INTO situacao_motorista (descricao) VALUES
 ('Ativo'),
