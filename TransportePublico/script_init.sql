@@ -15,6 +15,10 @@ DROP TABLE IF EXISTS CONCESSIONARIA;
 
 CREATE TABLE empresa (empresa_id SERIAL NOT NULL,
 					  nome varchar(30) NOT NULL,
+					  endereco varchar(255),
+					  telefone varchar(15),
+					  email varchar(100) NOT NULL,
+					  cnpj varchar(14) NOT NULL,
 					  CONSTRAINT pk_empresa PRIMARY KEY (empresa_id));
 
 CREATE TABLE situacao_motorista(situacao_id SERIAL NOT NULL,
