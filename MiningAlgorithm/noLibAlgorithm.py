@@ -1,3 +1,6 @@
+import pandas as pd
+from fpdf import FPDF
+
 transactions = [
     ['café', 'pão', 'manteiga'],          
     ['leite', 'cerveja', 'pão', 'manteiga'], 
@@ -55,43 +58,106 @@ def get_patterns(all_items, transactions):
     
     return items_dict
     
-
-def get_support(x, y):
+def get_support(x, y, transactions):
     both_occurrence = 0
     for transaction in transactions:
         if x in transaction and y in transaction:
             both_occurrence += 1
-
     return both_occurrence / len(transactions)
 
-def get_confidence(data, x, y):
+def get_confidence(data, x, y, transactions):
     both_occurrence = 0
     x_occurrence = data[x]['qtd']
-    
     for transaction in transactions:
         if x in transaction and y in transaction:
             both_occurrence += 1
-
-    return both_occurrence / x_occurrence
+    return both_occurrence / x_occurrence if x_occurrence > 0 else 0
     
-def format_data(data):
+def format_data(data, transactions):
     print('antecedent\tconsequent\tsupport\tconfidence')
     output = []
-    
     for item in data:
         for product in data[item]['items']:
-            print(f'{item}\t{product['product']}\t{get_support(item, product['product'])}\t{round(get_confidence(data, item, product['product']), 2)}')
-            output.append({'antecedent':item, 'consequent':product['product'], 'support':get_support(item, product['product']), 'confidence':round(get_confidence(data, item, product['product']), 2)})
-
+            sup = get_support(item, product['product'], transactions)
+            conf = round(get_confidence(data, item, product['product'], transactions), 2)
+            print(f"{item}\t{product['product']}\t{sup}\t{conf}")
+            output.append({
+                'antecedent': item,
+                'consequent': product['product'],
+                'support': sup,
+                'confidence': conf
+            })
     return output
 
+def csv_transactions(csv_file):
+    df_csv = pd.read_csv(csv_file)
+    # Cada linha deve conter os itens separados por ';'
+    transactions = df_csv['items'].apply(lambda x: x.split(';')).tolist()
+    return transactions
+
+
+def generate_pdf(static_data, csv_data, output_file):
+    pdf = FPDF()
+    
+    # Página 1: Dados Estáticos
+    pdf.add_page()
+    pdf.set_font("Arial", "B", 16)
+    pdf.cell(0, 10, "Comparação de Regras de Associação", ln=True, align="C")
+    pdf.ln(10)
+    
+    pdf.set_font("Arial", "B", 12)
+    pdf.cell(0, 10, "Dados Estáticos:", ln=True)
+    pdf.set_font("Arial", "", 10)
+    pdf.cell(0, 10, "Antecedent\tConsequent\tSupport\tConfidence", ln=True)
+    for item in static_data:
+        line = f"{item['antecedent']}\t{item['consequent']}\t{item['support']:.2f}\t{item['confidence']:.2f}"
+        pdf.cell(0, 5, line, ln=True)
+    
+    # Página 2: Dados do CSV
+    pdf.add_page()
+    pdf.set_font("Arial", "B", 12)
+    pdf.cell(0, 10, "Dados do CSV:", ln=True)
+    pdf.set_font("Arial", "", 10)
+    pdf.cell(0, 10, "Antecedent\tConsequent\tSupport\tConfidence", ln=True)
+    for item in csv_data:
+        line = f"{item['antecedent']}\t{item['consequent']}\t{item['support']:.2f}\t{item['confidence']:.2f}"
+        pdf.cell(0, 5, line, ln=True)
+    
+    pdf.output(output_file)
+    print(f"PDF gerado: {output_file}")
 
 
 
 # ------------------------------------------------------------
 
-all_items = encode_transactions(transactions)
-data = get_patterns(all_items, transactions)
-formated_data = format_data(data)
-
-print(formated_data)
+if __name__ == "__main__":
+    # Configurações para exibir a saída completa sem abreviação (apenas para debug/visualização no terminal)
+    pd.set_option('display.max_rows', None)
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.max_colwidth', None)
+    pd.set_option('display.width', None)
+    
+    # Análise com dados estáticos
+    all_items_static = encode_transactions(transactions)
+    data_static = get_patterns(all_items_static, transactions)
+    formatted_static = format_data(data_static, transactions)
+    
+    # Análise com dados do CSV
+    try:
+        transactions_csv = csv_transactions("c:/Users/r1k/Documents/INF010/INF010/MiningAlgorithm/transactions.csv")
+    except FileNotFoundError:
+        print("Arquivo 'transactions.csv' não encontrado. Certifique-se de que o arquivo existe no diretório de execução.")
+        exit(1)
+    
+    all_items_csv = encode_transactions(transactions_csv)
+    data_csv = get_patterns(all_items_csv, transactions_csv)
+    formatted_csv = format_data(data_csv, transactions_csv)
+    
+    # Gerar PDF comparando os resultados
+    generate_pdf(formatted_static, formatted_csv, "resultado.pdf")
+    
+    # Exibir os resultados no terminal para verificação
+    print("\nResultados Dados Estáticos:")
+    print(formatted_static)
+    print("\nResultados Dados CSV:")
+    print(formatted_csv)
