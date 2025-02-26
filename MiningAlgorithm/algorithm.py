@@ -85,7 +85,7 @@ if __name__ == "__main__":
     
     # Análise com dados do CSV
     try:
-        transactions_csv = csv_transactions("c:/Users/r1k/Documents/INF010/INF010/MiningAlgorithm/transactions.csv")
+        transactions_csv = csv_transactions("./transactions.csv")
         rules_csv = run_analysis(transactions_csv)
     except FileNotFoundError:
         print("Arquivo 'transactions.csv' não encontrado. Certifique-se de que o arquivo existe no diretório de execução.")

@@ -1,18 +1,18 @@
 import pandas as pd
 from fpdf import FPDF
 
-transactions = [
-    ['café', 'pão', 'manteiga'],          
-    ['leite', 'cerveja', 'pão', 'manteiga'], 
-    ['café', 'pão', 'manteiga'],          
-    ['leite', 'café', 'pão', 'manteiga'], 
-    ['cerveja'],                          
-    ['manteiga'],                         
-    ['pão'],                               
-    ['feijão'],                            
-    ['arroz', 'feijão'],                  
-    ['arroz']                             
-]
+# transactions = [
+#     ['café', 'pão', 'manteiga'],          
+#     ['leite', 'cerveja', 'pão', 'manteiga'], 
+#     ['café', 'pão', 'manteiga'],          
+#     ['leite', 'café', 'pão', 'manteiga'], 
+#     ['cerveja'],                          
+#     ['manteiga'],                         
+#     ['pão'],                               
+#     ['feijão'],                            
+#     ['arroz', 'feijão'],                  
+#     ['arroz']                             
+# ]
         
 def get_index_by_product(items, product_name):
     for index, item in enumerate(items):
@@ -74,13 +74,12 @@ def get_confidence(data, x, y, transactions):
     return both_occurrence / x_occurrence if x_occurrence > 0 else 0
     
 def format_data(data, transactions):
-    print('antecedent\tconsequent\tsupport\tconfidence')
     output = []
+    
     for item in data:
         for product in data[item]['items']:
             sup = get_support(item, product['product'], transactions)
             conf = round(get_confidence(data, item, product['product'], transactions), 2)
-            print(f"{item}\t{product['product']}\t{sup}\t{conf}")
             output.append({
                 'antecedent': item,
                 'consequent': product['product'],
@@ -125,6 +124,12 @@ def generate_pdf(static_data, csv_data, output_file):
     
     pdf.output(output_file)
     print(f"PDF gerado: {output_file}")
+    
+    
+def save_to_csv(df, filename):
+    df.to_csv(filename, index=False)
+    print(f"Arquivo CSV gerado: {filename}")
+
 
 
 
@@ -137,14 +142,14 @@ if __name__ == "__main__":
     pd.set_option('display.max_colwidth', None)
     pd.set_option('display.width', None)
     
-    # Análise com dados estáticos
-    all_items_static = encode_transactions(transactions)
-    data_static = get_patterns(all_items_static, transactions)
-    formatted_static = format_data(data_static, transactions)
+    # # Análise com dados estáticos
+    # all_items_static = encode_transactions(transactions)
+    # data_static = get_patterns(all_items_static, transactions)
+    # formatted_static = format_data(data_static, transactions)
     
     # Análise com dados do CSV
     try:
-        transactions_csv = csv_transactions("c:/Users/r1k/Documents/INF010/INF010/MiningAlgorithm/transactions.csv")
+        transactions_csv = csv_transactions("./transactions.csv")
     except FileNotFoundError:
         print("Arquivo 'transactions.csv' não encontrado. Certifique-se de que o arquivo existe no diretório de execução.")
         exit(1)
@@ -154,10 +159,13 @@ if __name__ == "__main__":
     formatted_csv = format_data(data_csv, transactions_csv)
     
     # Gerar PDF comparando os resultados
-    generate_pdf(formatted_static, formatted_csv, "resultado.pdf")
+    # generate_pdf(formatted_static, formatted_csv, "resultado.pdf")
+    
+    resulta_dataframe = pd.DataFrame(formatted_csv)
+    save_to_csv(resulta_dataframe, 'resultado.csv')
     
     # Exibir os resultados no terminal para verificação
-    print("\nResultados Dados Estáticos:")
-    print(formatted_static)
-    print("\nResultados Dados CSV:")
-    print(formatted_csv)
+    # print("\nResultados Dados Estáticos:")
+    # print(formatted_static)
+    # print("\nResultados Dados CSV:")
+    # print(formatted_csv)
