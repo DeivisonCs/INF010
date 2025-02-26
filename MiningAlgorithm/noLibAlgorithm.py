@@ -52,9 +52,6 @@ def get_patterns(all_items, transactions):
         
         # Percorre as transações buscando se contem o item
         search_in_transactions(transactions, items_dict, item)
-                            
-    # print_dict(items_dict)
-    format_data(items_dict)
     
     return items_dict
     
